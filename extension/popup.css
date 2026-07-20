@@ -1,0 +1,53 @@
+body{
+    margin:0;
+    padding:0;
+    width:350px;
+    background:#0F172A;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-bottom:12px;
+    border:none;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#7C3AED;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+button:hover{
+    background:#6D28D9;
+}
+
+#pageTitle,
+#pageUrl{
+    word-break:break-word;
+    margin-bottom:15px;
+}
+
+#status{
+    margin-top:15px;
+    color:#22C55E;
+    text-align:center;
+}
