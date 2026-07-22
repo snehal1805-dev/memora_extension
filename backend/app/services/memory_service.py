@@ -86,15 +86,87 @@ def save_memory(
 
     return memory
 
+from sqlalchemy.orm import Session
+from app.models.memory_model import Memory
+
+
 def get_all_memories(
     db: Session,
-    user_id: int
+    user_id: int,
+    page: int = 1,
+    limit: int = 20,
+    favorite: bool | None = None,
+    domain: str | None = None,
+    tag: str | None = None,
+    collection_id: int | None = None,
+    sort: str = "recent"
 ):
 
-    return (
+    query = (
         db.query(Memory)
-        .filter(Memory.user_id == user_id)
-        .order_by(Memory.created_at.desc())
+        .filter(
+            Memory.user_id == user_id
+        )
+    )
+
+    if favorite is not None:
+
+        query = query.filter(
+            Memory.is_favorite == favorite
+        )
+
+    if domain:
+
+        query = query.filter(
+            Memory.domain == domain
+        )
+
+    if tag:
+
+        query = query.filter(
+            Memory.tags.like(f"%{tag}%")
+        )
+
+    if collection_id:
+
+        query = query.filter(
+            Memory.collection_id == collection_id
+        )
+
+    if sort == "recent":
+
+        query = query.order_by(
+            Memory.created_at.desc()
+        )
+
+    elif sort == "oldest":
+
+        query = query.order_by(
+            Memory.created_at.asc()
+        )
+
+    elif sort == "visited":
+
+        query = query.order_by(
+            Memory.visit_count.desc()
+        )
+
+    elif sort == "opened":
+
+        query = query.order_by(
+            Memory.last_opened.desc()
+        )
+
+    elif sort == "alphabetical":
+
+        query = query.order_by(
+            Memory.title.asc()
+        )
+
+    return (
+        query
+        .offset((page - 1) * limit)
+        .limit(limit)
         .all()
     )
 
@@ -330,4 +402,19 @@ def get_most_visited(
         )
         .limit(10)
         .all()
+    )
+
+def get_memory_details(
+    db: Session,
+    user_id: int,
+    memory_id: int
+):
+
+    return (
+        db.query(Memory)
+        .filter(
+            Memory.id == memory_id,
+            Memory.user_id == user_id
+        )
+        .first()
     )

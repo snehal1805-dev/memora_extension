@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const loginBtn = document.getElementById("loginBtn");
     const saveBtn = document.getElementById("saveBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
     const pageTitle = document.getElementById("pageTitle");
     const pageUrl = document.getElementById("pageUrl");
@@ -22,6 +23,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         dashboardSection.style.display = "block";
 
         await loadCurrentPage();
+
+    } else {
+
+        loginSection.style.display = "block";
+        dashboardSection.style.display = "none";
 
     }
 
@@ -54,10 +60,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             await loadCurrentPage();
 
+            status.style.color = "#22c55e";
+            status.innerText = "✅ Login Successful";
+
         } catch (error) {
 
             status.style.color = "red";
             status.innerText = error.message;
+
+            if (error.message === "Session expired. Please login again.") {
+
+                loginSection.style.display = "block";
+                dashboardSection.style.display = "none";
+
+            }
 
         } finally {
 
@@ -91,11 +107,35 @@ document.addEventListener("DOMContentLoaded", async () => {
             status.style.color = "red";
             status.innerText = error.message;
 
+            if (error.message === "Session expired. Please login again.") {
+
+                loginSection.style.display = "block";
+                dashboardSection.style.display = "none";
+
+            }
+
         } finally {
 
             saveBtn.disabled = false;
 
         }
+
+    });
+
+    // ---------- LOGOUT ----------
+
+    logoutBtn.addEventListener("click", async () => {
+
+        await logout();
+
+        loginSection.style.display = "block";
+        dashboardSection.style.display = "none";
+
+        emailInput.value = "";
+        passwordInput.value = "";
+
+        status.style.color = "#22c55e";
+        status.innerText = "Logged out successfully.";
 
     });
 

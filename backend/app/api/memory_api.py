@@ -31,7 +31,8 @@ from app.services.memory_service import (
     get_recent_memories,
     get_top_domains,
     get_top_tags,
-    get_most_visited
+    get_most_visited,
+    get_memory_details
 )
 
 router = APIRouter(
@@ -118,13 +119,44 @@ def search_memories(
     response_model=list[MemoryResponse]
 )
 def all_memories(
+
+    page: int = 1,
+    limit: int = 20,
+
+    favorite: bool | None = None,
+
+    domain: str | None = None,
+
+    tag: str | None = None,
+
+    collection_id: int | None = None,
+
+    sort: str = "recent",
+
     db: Session = Depends(get_db),
     user: User = Depends(current_user)
+
 ):
 
     return get_all_memories(
-        db,
-        user.id
+
+        db=db,
+
+        user_id=user.id,
+
+        page=page,
+
+        limit=limit,
+
+        favorite=favorite,
+
+        domain=domain,
+
+        tag=tag,
+
+        collection_id=collection_id,
+
+        sort=sort
     )
 
 
@@ -141,6 +173,30 @@ def favorite_memories(
         db,
         user.id
     )
+
+@router.get(
+    "/{memory_id}/details",
+    response_model=MemoryResponse
+)
+def memory_details_api(
+    memory_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    memory = get_memory_details(
+        db,
+        user.id,
+        memory_id
+    )
+
+    if not memory:
+        raise HTTPException(
+            status_code=404,
+            detail="Memory not found."
+        )
+
+    return memory
 
 
 @router.get(

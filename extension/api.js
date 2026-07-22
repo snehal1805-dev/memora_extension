@@ -31,7 +31,27 @@ async function apiRequest(
             options
         );
 
-        const data = await response.json();
+        let data = {};
+
+        try {
+            data = await response.json();
+        } catch {
+            data = {};
+        }
+
+        // -------- TOKEN EXPIRED --------
+
+        if (response.status === 401) {
+
+            await chrome.storage.local.remove("token");
+
+            throw new Error(
+                "Session expired. Please login again."
+            );
+
+        }
+
+        // -------- OTHER ERRORS --------
 
         if (!response.ok) {
 

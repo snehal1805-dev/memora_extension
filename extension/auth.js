@@ -4,8 +4,8 @@ async function login(email, password) {
         "/auth/login",
         "POST",
         {
-            email: email,
-            password: password
+            email,
+            password
         }
     );
 
@@ -20,11 +20,9 @@ async function login(email, password) {
 
 async function getToken() {
 
-    const result = await chrome.storage.local.get(
-        "token"
-    );
+    const result = await chrome.storage.local.get("token");
 
-    return result.token;
+    return result.token || null;
 
 }
 
@@ -33,15 +31,34 @@ async function isLoggedIn() {
 
     const token = await getToken();
 
-    return !!token;
+    if (!token) {
+        return false;
+    }
+
+    try {
+
+        await apiRequest(
+            "/user/me",
+            "GET",
+            null,
+            token
+        );
+
+        return true;
+
+    } catch (error) {
+
+        await chrome.storage.local.remove("token");
+
+        return false;
+
+    }
 
 }
 
 
 async function logout() {
 
-    await chrome.storage.local.remove(
-        "token"
-    );
+    await chrome.storage.local.remove("token");
 
 }
