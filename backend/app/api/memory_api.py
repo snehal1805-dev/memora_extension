@@ -12,8 +12,12 @@ from app.schemas.memory_schema import (
 )
 
 from app.schemas.search_schema import SearchRequest
+from app.schemas.dashboard_schema import DashboardStats
 
 from app.utils.dependencies import current_user
+from app.services.insight_service import generate_ai_insight
+from app.schemas.insight_schema import InsightResponse
+from app.services.ai_service import semantic_search
 
 from app.services.memory_service import (
     save_memory,
@@ -22,15 +26,48 @@ from app.services.memory_service import (
     delete_memory,
     toggle_favorite,
     get_favorite_memories,
-    update_memory
+    update_memory,
+    get_dashboard_stats,
+    get_recent_memories,
+    get_top_domains,
+    get_top_tags,
+    get_most_visited
 )
-
-from app.services.ai_service import semantic_search
 
 router = APIRouter(
     prefix="/memory",
     tags=["Memory"]
 )
+
+
+@router.get(
+    "/dashboard",
+    response_model=DashboardStats
+)
+def dashboard_stats(
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    return get_dashboard_stats(
+        db,
+        user.id
+    )
+
+
+@router.get(
+    "/recent",
+    response_model=list[MemoryResponse]
+)
+def recent_memories(
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    return get_recent_memories(
+        db,
+        user.id
+    )
 
 
 @router.post(
@@ -218,3 +255,77 @@ def remove_memory(
     return {
         "message": "Memory deleted successfully."
     }
+
+@router.get("/dashboard/top-domains")
+def top_domains(
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    domains = get_top_domains(
+        db,
+        user.id
+    )
+
+    return [
+        {
+            "domain": domain,
+            "count": count
+        }
+        for domain, count in domains
+    ]
+
+@router.get("/dashboard/top-tags")
+def top_tags(
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    tags = get_top_tags(
+        db,
+        user.id
+    )
+
+    return [
+        {
+            "tag": tag,
+            "count": count
+        }
+        for tag, count in tags
+    ]
+
+@router.get("/dashboard/most-visited")
+def most_visited_pages(
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    memories = get_most_visited(
+        db,
+        user.id
+    )
+
+    return [
+        {
+            "id": memory.id,
+            "title": memory.title,
+            "url": memory.url,
+            "visit_count": memory.visit_count,
+            "favicon": memory.favicon
+        }
+        for memory in memories
+    ]
+
+@router.get(
+    "/dashboard/insight",
+    response_model=InsightResponse
+)
+def ai_insight(
+    db: Session = Depends(get_db),
+    user: User = Depends(current_user)
+):
+
+    return generate_ai_insight(
+        db,
+        user.id
+    )

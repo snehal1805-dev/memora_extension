@@ -3,12 +3,14 @@ from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.database.database import Base
 
 
 class User(Base):
+
     __tablename__ = "users"
 
     id = Column(
@@ -42,4 +44,16 @@ class User(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+
+    memories = relationship(
+        "Memory",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    collections = relationship(
+        "Collection",
+        back_populates="user",
+        cascade="all, delete-orphan"
     )

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-
+from datetime import datetime
 from pydantic import BaseModel
 from pydantic import ConfigDict
 
@@ -28,6 +28,10 @@ class MemoryResponse(BaseModel):
     tags: Optional[str]
     is_favorite: bool
     created_at: datetime
+    reading_time: int
+    domain: str | None
+    last_opened: datetime | None
+    visit_count: int
 
     model_config = ConfigDict(
         from_attributes=True
