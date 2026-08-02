@@ -1,19 +1,38 @@
-# Virtual Environment
-venv/
-
+# ==========================
 # Python
+# ==========================
 __pycache__/
+*.py[cod]
 *.pyc
+*.log
 
-# Environment
+# ==========================
+# Virtual Environment
+# ==========================
+venv/
+.venv/
+env/
+ENV/
+
+# ==========================
+# Environment Variables
+# ==========================
 .env
+.env.*
 
+# ==========================
 # Chroma Database
+# ==========================
 chroma_db/
 
-# VS Code
+# ==========================
+# IDE
+# ==========================
 .vscode/
+.idea/
 
-# OS Files
+# ==========================
+# Operating System
+# ==========================
 .DS_Store
 Thumbs.db
