@@ -12,7 +12,7 @@ async function apiRequest(
     };
 
     if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
+        headers.Authorization = `Bearer ${token}`;
     }
 
     const options = {
@@ -35,17 +35,13 @@ async function apiRequest(
 
         try {
             data = await response.json();
-        } catch {
-            data = {};
-        }
+        } catch {}
 
         if (response.status === 401) {
 
             await chrome.storage.local.remove("token");
 
-            throw new Error(
-                "Session expired. Please login again."
-            );
+            throw new Error("Session expired. Please login again.");
 
         }
 
@@ -59,11 +55,11 @@ async function apiRequest(
 
         return data;
 
-    } catch (error) {
+    } catch (err) {
 
-        console.error("API ERROR:", error);
+        console.error("API ERROR:", err);
 
-        throw error;
+        throw err;
 
     }
 

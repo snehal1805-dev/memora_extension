@@ -15,7 +15,7 @@ async function saveCurrentPage() {
         throw new Error("No active tab found.");
     }
 
-    let page;
+    let page = null;
 
     try {
 
@@ -27,6 +27,8 @@ async function saveCurrentPage() {
         );
 
     } catch (error) {
+
+        console.log("Injecting content script...");
 
         await chrome.scripting.executeScript({
             target: {
@@ -57,11 +59,23 @@ async function saveCurrentPage() {
         raw_content: page.content
     };
 
-    return await apiRequest(
-        "/memory/save",
-        "POST",
-        memory,
-        token
-    );
+    try {
+
+        const response = await apiRequest(
+            "/memory/save",
+            "POST",
+            memory,
+            token
+        );
+
+        return response;
+
+    } catch (error) {
+
+        console.error("Save Memory Error:", error);
+
+        throw error;
+
+    }
 
 }

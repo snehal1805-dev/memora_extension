@@ -2,9 +2,7 @@ console.log("✅ Memora Content Script Loaded");
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
-    if (request.type !== "EXTRACT_PAGE") {
-        return;
-    }
+    if (request.type !== "EXTRACT_PAGE") return;
 
     try {
 
@@ -17,10 +15,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         sendResponse(page);
 
-    } catch (error) {
+    } catch (err) {
 
-        console.error(error);
-
+        console.error(err);
         sendResponse(null);
 
     }
@@ -31,15 +28,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 function getFavicon() {
 
-    const icon = document.querySelector(
-        "link[rel*='icon']"
-    );
+    const icon = document.querySelector("link[rel*='icon']");
 
-    if (icon) {
-        return icon.href;
-    }
-
-    return "";
+    return icon ? icon.href : "";
 
 }
 
