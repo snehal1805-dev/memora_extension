@@ -1,33 +1,51 @@
+// ---------------- LOGIN ----------------
+
 async function login(email, password) {
 
     const response = await apiRequest(
         "/auth/login",
         "POST",
         {
-            email: email,
-            password: password
+            email,
+            password
         }
     );
 
+    const token = response.access_token;
+
+    // Save JWT
     await chrome.storage.local.set({
-        token: response.access_token
+        token: token
+    });
+
+    // Fetch logged-in user
+    const user = await apiRequest(
+        "/user/me",
+        "GET",
+        null,
+        token
+    );
+
+    // Save user profile
+    await chrome.storage.local.set({
+        user: user
     });
 
     return response;
 
 }
 
+// ---------------- GET TOKEN ----------------
+
 async function getToken() {
 
     const result = await chrome.storage.local.get("token");
 
-    if (result.token) {
-        return result.token;
-    }
-
-    return null;
+    return result.token || null;
 
 }
+
+// ---------------- CHECK LOGIN ----------------
 
 async function isLoggedIn() {
 
@@ -39,6 +57,7 @@ async function isLoggedIn() {
 
     try {
 
+        // Verify token
         await apiRequest(
             "/user/me",
             "GET",
@@ -52,7 +71,11 @@ async function isLoggedIn() {
 
         console.error(error);
 
-        await chrome.storage.local.remove("token");
+        // Remove invalid session
+        await chrome.storage.local.remove([
+            "token",
+            "user"
+        ]);
 
         return false;
 
@@ -60,8 +83,13 @@ async function isLoggedIn() {
 
 }
 
+// ---------------- LOGOUT ----------------
+
 async function logout() {
 
-    await chrome.storage.local.remove("token");
+    await chrome.storage.local.remove([
+        "token",
+        "user"
+    ]);
 
 }

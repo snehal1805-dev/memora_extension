@@ -15,6 +15,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const status = document.getElementById("status");
 
+    // -------- USER CARD --------
+
+    const userCard = document.getElementById("userCard");
+    const avatar = document.getElementById("avatar");
+    const userName = document.getElementById("userName");
+    const userEmail = document.getElementById("userEmail");
+
     // ---------- CHECK LOGIN ----------
 
     if (await isLoggedIn()) {
@@ -22,6 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         loginSection.style.display = "none";
         dashboardSection.style.display = "block";
 
+        await loadUser();
         await loadCurrentPage();
 
     } else {
@@ -46,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             status.innerText = "Enter email and password.";
 
             return;
+
         }
 
         loginBtn.disabled = true;
@@ -58,12 +67,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             loginSection.style.display = "none";
             dashboardSection.style.display = "block";
 
+            await loadUser();
             await loadCurrentPage();
 
             status.style.color = "#22c55e";
             status.innerText = "✅ Login Successful";
 
         } catch (error) {
+
+            console.error(error);
 
             status.style.color = "red";
             status.innerText = error.message;
@@ -131,6 +143,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         loginSection.style.display = "block";
         dashboardSection.style.display = "none";
 
+        userCard.style.display = "none";
+
         emailInput.value = "";
         passwordInput.value = "";
 
@@ -138,6 +152,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         status.innerText = "Logged out successfully.";
 
     });
+
+    // ---------- LOAD USER ----------
+
+    async function loadUser() {
+
+        const result = await chrome.storage.local.get("user");
+
+        if (!result.user) {
+
+            userCard.style.display = "none";
+            return;
+
+        }
+
+        userCard.style.display = "flex";
+
+        avatar.innerText =
+            result.user.full_name.charAt(0).toUpperCase();
+
+        userName.innerText =
+            result.user.full_name;
+
+        userEmail.innerText =
+            result.user.email;
+
+    }
 
     // ---------- LOAD CURRENT PAGE ----------
 
