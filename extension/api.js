@@ -12,12 +12,12 @@ async function apiRequest(
     };
 
     if (token) {
-        headers.Authorization = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
     }
 
     const options = {
-        method,
-        headers
+        method: method,
+        headers: headers
     };
 
     if (body) {
@@ -35,8 +35,11 @@ async function apiRequest(
 
         try {
             data = await response.json();
-        } catch {}
+        } catch (e) {
+            data = {};
+        }
 
+        // Session expired
         if (response.status === 401) {
 
             await chrome.storage.local.remove("token");
@@ -45,6 +48,7 @@ async function apiRequest(
 
         }
 
+        // Other API errors
         if (!response.ok) {
 
             throw new Error(
@@ -55,14 +59,12 @@ async function apiRequest(
 
         return data;
 
-    } catch (err) {
+    } catch (error) {
 
-        console.error("API ERROR:", err);
+        console.error("API ERROR:", error);
 
-        throw err;
+        throw error;
 
     }
 
 }
-
-export { apiRequest };
