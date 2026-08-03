@@ -29,7 +29,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 });
 
-
 function getFavicon() {
 
     const icon = document.querySelector(
@@ -43,7 +42,6 @@ function getFavicon() {
     return "";
 
 }
-
 
 function extractContent() {
 

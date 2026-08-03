@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://memoraextension-production.up.railway.app";
 
 async function apiRequest(
     endpoint,
@@ -16,8 +16,8 @@ async function apiRequest(
     }
 
     const options = {
-        method: method,
-        headers: headers
+        method,
+        headers
     };
 
     if (body) {
@@ -39,8 +39,6 @@ async function apiRequest(
             data = {};
         }
 
-        // -------- TOKEN EXPIRED --------
-
         if (response.status === 401) {
 
             await chrome.storage.local.remove("token");
@@ -50,8 +48,6 @@ async function apiRequest(
             );
 
         }
-
-        // -------- OTHER ERRORS --------
 
         if (!response.ok) {
 
@@ -68,6 +64,9 @@ async function apiRequest(
         console.error("API ERROR:", error);
 
         throw error;
+
     }
 
 }
+
+export { apiRequest };
