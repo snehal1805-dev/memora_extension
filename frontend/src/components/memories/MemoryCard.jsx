@@ -60,9 +60,10 @@ const MemoryCard = ({ memory, onDelete }) => {
 
     e.stopPropagation();
 
-    const ok = window.confirm(
-      "Delete this memory?"
-    );
+    console.log("Memory object:", memory);
+    console.log("Deleting ID:", memory.id);
+
+    const ok = window.confirm("Delete this memory?");
 
     if (!ok) return;
 
@@ -73,9 +74,7 @@ const MemoryCard = ({ memory, onDelete }) => {
       toast.success("Memory deleted");
 
       if (onDelete) {
-
         onDelete(memory.id);
-
       }
 
     } catch (err) {
