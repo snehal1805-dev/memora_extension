@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "memoraextension-production.up.railway.app",
+  baseURL: "https://memoraextension-production.up.railway.app",
 });
 
 api.interceptors.request.use((config) => {
